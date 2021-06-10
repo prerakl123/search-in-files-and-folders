@@ -10,6 +10,7 @@ import time
 import datetime
 import random
 from ctypes import windll
+from inspect import getsourcefile
 import sqlite3
 
 FALSE = False
@@ -24,8 +25,8 @@ class SearchDataBase:
         self.cursor = self.connect()
         try:
             self.idlist = self.initialize_idlist()
-        except sqlite3.Error:
-            self.idlist = self.initialize_idlist()
+        except sqlite3.OperationalError:
+            tk_mb.showinfo("FindInFiles", "DataBase was not found.\nDataBase created.\nRe-run the program")
         self.last_execution_result = None
 
     def check_db(self) -> bool:
@@ -378,7 +379,7 @@ class FindInFiles(Tk):
         self.end_time = None
         self.search_time = ''
 
-        self.rootdir = sys.executable.rstrip('\\python.exe').rstrip('\\pythonw.exe')
+        self.rootdir = os.path.dirname(os.path.abspath(getsourcefile(self.__class__)))    # sys.executable.rstrip('\\python.exe').rstrip('\\pythonw.exe')
         self.suffix = '.py'
         self.searching = FALSE
 
