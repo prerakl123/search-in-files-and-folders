@@ -607,7 +607,7 @@ class FindInFiles(Tk):
                                                                    line[start:end]))
                                                     self.search_results.results = result
                                                     self.search_results.total_hits = len(result)
-                                                    break
+                                                    
                                     except UnicodeDecodeError as uni_err:
                                         files_skipped += 1
                                         skipped.append((os.path.abspath(fullpath), uni_err))
@@ -637,7 +637,7 @@ class FindInFiles(Tk):
                                                 result.append((os.path.abspath(fullpath), line_number, line[start:end]))
                                                 self.search_results.results = result
                                                 self.search_results.total_hits = len(result)
-                                                break
+                                                
                                 except UnicodeDecodeError as uni_err:
                                     files_skipped += 1
                                     skipped.append((os.path.abspath(fullpath), uni_err))
@@ -677,7 +677,7 @@ class FindInFiles(Tk):
                                                         (os.path.abspath(fullpath), line_number, line[start:end]))
                                                     self.search_results.results = result
                                                     self.search_results.total_hits = len(result)
-                                                    break
+                                                    
                                     except UnicodeDecodeError as uni_err:
                                         files_skipped += 1
                                         skipped.append((os.path.abspath(fullpath), uni_err))
@@ -709,7 +709,6 @@ class FindInFiles(Tk):
                                                     (os.path.abspath(fullpath), line_number, line[start:end]))
                                                 self.search_results.results = result
                                                 self.search_results.total_hits = len(result)
-                                                break
                                 except UnicodeDecodeError as uni_err:
                                     files_skipped += 1
                                     skipped.append((os.path.abspath(fullpath), uni_err))
