@@ -1,11 +1,9 @@
 import threading
 from tkinter import ttk
 from tkinter import *
-import tkinter as tk
 from tkinter import filedialog as tk_fd
 from tkinter import messagebox as tk_mb
 import os
-import sys
 import time
 import datetime
 import random
@@ -17,6 +15,7 @@ FALSE = False
 TRUE = True
 DONE = 'Done'
 TABLES = ['keyword_history', 'path_history', 'search_time', 'extension_history']
+PLACEHOLDER = "Enter keyword to be searched..."
 
 
 class SearchDataBase:
@@ -125,7 +124,7 @@ class SearchDataBase:
         return rand_str if rand_str not in self.idlist else self.new_id()
 
 
-class ToolTip(tk.Toplevel):
+class ToolTip(Toplevel):
     """
     Provides a ToolTip widget for tkinter.
     To apply a ToolTip to any tkinter widget, simply pass the widget to the
@@ -149,7 +148,7 @@ class ToolTip(tk.Toplevel):
         self.parent = self.wdgt.master
         
         # Initalise the Toplevel
-        tk.Toplevel.__init__(self, self.parent, bg='black', padx=1, pady=1)
+        Toplevel.__init__(self, self.parent, bg='black', padx=1, pady=1)
         
         # Hide initially
         self.withdraw()
@@ -161,7 +160,7 @@ class ToolTip(tk.Toplevel):
         self.wm_attributes('-topmost', True)
 
         # The msgVar will contain the text displayed by the ToolTip
-        self.msgVar = tk.StringVar()
+        self.msgVar = StringVar()
         if msg is None:
             self.msgVar.set('No message provided')
         else:
@@ -174,7 +173,7 @@ class ToolTip(tk.Toplevel):
         self.visible = 0
         self.lastMotion = 0
         # The text of the ToolTip is displayed in a Message widget
-        tk.Message(self, textvariable=self.msgVar, bg='#FFFFDD', font=tooltip_font, aspect=1000).grid()
+        Message(self, textvariable=self.msgVar, bg='#FFFFDD', font=tooltip_font, aspect=1000).grid()
 
         # Add bindings to the widget.  This will NOT override
         # bindings that the widget already has
@@ -226,7 +225,7 @@ class ToolTip(tk.Toplevel):
             #         tuple(reversed(self.wdgt.winfo_pointerxy())) < tuple(reversed(screen_hw)):
             # self.geometry('+%i+%i' % (event.x_root-int(len(self.msgVar.get())), event.y_root-10))
             # else:
-            self.geometry('+%i+%i' % (event.x_root+8, event.y_root+18))
+            self.geometry('+%i+%i' % (event.x_root + 8, event.y_root + 18))
             try:
                 # Try to call the message function.  Will not change
                 # the message if the message function is None or
@@ -261,7 +260,7 @@ class AutoCompletePlaceHolderCombobox(ttk.Combobox):
     _hit_index = 0
     position = 0
 
-    def __init__(self, master, placeholder="Enter Text Here...", color='grey', **kwargs):
+    def __init__(self, master, placeholder="Enter Text Here...", **kwargs):
         ttk.Combobox.__init__(self, master, **kwargs)
 
         self._completion_list = []
@@ -270,7 +269,7 @@ class AutoCompletePlaceHolderCombobox(ttk.Combobox):
         self.position = 0
 
         self.placeholder = placeholder
-        self.placeholder_color = color
+        # self.placeholder_color = color
         # self.default_fg_color = self['fg']
 
         self.bind("<FocusIn>", self.foc_in)
@@ -339,7 +338,7 @@ class AutoCompletePlaceHolderCombobox(ttk.Combobox):
         if event.keysym == "Right":
             self.position = self.index(END)
         if len(event.keysym) == 1:
-            self.autocomplete()
+            self.autocomplete(0)
 
 
 class FindInFiles(Tk):
@@ -379,7 +378,8 @@ class FindInFiles(Tk):
         self.end_time = None
         self.search_time = ''
 
-        self.rootdir = os.path.dirname(os.path.abspath(getsourcefile(self.__class__)))    # sys.executable.rstrip('\\python.exe').rstrip('\\pythonw.exe')
+        self.rootdir = os.path.dirname(os.path.abspath(getsourcefile(self.__class__)))
+        # Also `sys.executable.rstrip('\\python.exe').rstrip('\\pythonw.exe')` for finding root directory
         self.suffix = '.py'
         self.searching = FALSE
 
@@ -405,8 +405,8 @@ class FindInFiles(Tk):
 
         self.entry_frame = Frame(self, highlightbackground='black', highlightthickness=1)
         self.result_frame = Frame(self, highlightbackground='black', highlightthickness=1)
-        self.search_entry = AutoCompletePlaceHolderCombobox(self.entry_frame, color='gray64', font='Helvetica 12',
-                                                            placeholder='Enter keyword to be searched...')
+        self.search_entry = AutoCompletePlaceHolderCombobox(self.entry_frame, font='Helvetica 12',
+                                                            placeholder=PLACEHOLDER)
         self.search_entry.bind('<Return>', self.search)
         self.search_entry.bind('<Enter>', lambda _=None: ToolTip(
             self.search_entry, 'Helvetica 8', msg='Enter the string to be searched.\nSearch is case specific. Search\n'
@@ -717,6 +717,9 @@ class FindInFiles(Tk):
         self.clear_result_tree()
 
     def search(self, event=None):
+        if self.search_entry.get() == PLACEHOLDER:
+            return
+
         self.result_tree.delete(*self.result_tree.get_children())
         string_to_search = self.search_entry.get()
         suffix = None
